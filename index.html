@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How SudokuSnap handles your data: no account, no server, and photographs read on your own phone.">
+<meta name="robots" content="index, follow">
+<title>SudokuSnap Privacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+</head>
+<body>
+<style>
+  /* The app's own Classic palette, from lib/theme/themes.dart. A policy page
+     that opens in a different set of colours from the app it describes is the
+     first thing that makes a reader wonder whose page they are on. */
+  :root {
+    --paper: #EEF1F6;
+    --surface: #FCFDFE;
+    --ink: #171A1F;
+    --ink-soft: #4A525C;
+    --ink-faint: #646D79;
+    --rule: #D5DCE5;
+    --biro: #0F4B93;
+    --biro-wash: #DCE8F7;
+    --sure: #0F6B37;
+    --shadow: 0 1px 2px rgba(23, 26, 31, .04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0F1216;
+      --surface: #191D23;
+      --ink: #E6EAF0;
+      --ink-soft: #9FAAB8;
+      --ink-faint: #8A95A3;
+      --rule: #333A44;
+      --biro: #7FB2F0;
+      --biro-wash: #20334A;
+      --sure: #4FBF85;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0F1216;
+    --surface: #191D23;
+    --ink: #E6EAF0;
+    --ink-soft: #9FAAB8;
+    --ink-faint: #8A95A3;
+    --rule: #333A44;
+    --biro: #7FB2F0;
+    --biro-wash: #20334A;
+    --sure: #4FBF85;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Rubik, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 47rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  header { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .brand { display: flex; align-items: center; gap: .875rem; }
+  .brand svg { width: 52px; height: 52px; flex: none; }
+  .wordmark {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -.02em;
+  }
+  .wordmark .snap { color: var(--biro); }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -.03em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.5rem;
+    font-size: .875rem;
+    color: var(--ink-faint);
+  }
+  .dates b { font-weight: 500; color: var(--ink-soft); }
+
+  /* The summary is the whole policy in three lines. Most readers will not get
+     past it, so it has to be true on its own rather than a teaser. */
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .summary h2 {
+    font-size: .8125rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+    margin: 0;
+    font-weight: 500;
+  }
+  .summary ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: .75rem; }
+  .summary li { display: flex; gap: .75rem; align-items: flex-start; }
+  .summary svg { width: 20px; height: 20px; flex: none; margin-top: .2rem; color: var(--sure); }
+
+  section { display: flex; flex-direction: column; gap: .75rem; }
+  section + section { margin-top: 1.25rem; }
+
+  h2 {
+    font-size: 1.375rem;
+    letter-spacing: -.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: 1.0625rem;
+    margin: 1rem 0 0;
+    letter-spacing: -.01em;
+  }
+  p { margin: 0; color: var(--ink-soft); }
+  p.lead { color: var(--ink); }
+  a { color: var(--biro); text-underline-offset: .18em; }
+  a:focus-visible {
+    outline: 2px solid var(--biro);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  ul.plain { margin: 0; padding-left: 1.1rem; color: var(--ink-soft); display: flex; flex-direction: column; gap: .5rem; }
+  ul.plain b { color: var(--ink); font-weight: 500; }
+
+  .rule { height: 1px; background: var(--rule); border: 0; margin: 1rem 0; }
+
+  /* Permissions are a table because they are three parallel facts about four
+     things, and prose would make the reader hold the pattern in their head. */
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .9375rem; }
+  th, td { text-align: left; padding: .7rem .9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 500; color: var(--ink-faint); font-size: .8125rem; text-transform: uppercase; letter-spacing: .08em; }
+  td:first-child { color: var(--ink); white-space: nowrap; font-weight: 500; }
+  td { color: var(--ink-soft); }
+
+  code {
+    font-family: "Atkinson Hyperlegible", ui-monospace, monospace;
+    font-size: .9em;
+    background: var(--biro-wash);
+    color: var(--ink);
+    padding: .1em .35em;
+    border-radius: 4px;
+  }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1.5rem;
+    color: var(--ink-faint);
+    font-size: .875rem;
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+  }
+</style>
+
+<div class="page">
+  <header>
+    <div class="brand">
+      <!-- The app mark: a viewfinder round four cells, one digit printed and
+           one written, which is the whole app in two numerals. -->
+      <svg viewBox="0 0 48 48" aria-hidden="true" fill="none">
+        <rect x="11" y="11" width="26" height="26" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4"/>
+        <path d="M24 11v26M11 24h26" stroke="var(--ink-faint)" stroke-width="1.6"/>
+        <path d="M6 12.5A4.5 4.5 0 0 1 10.5 8M37.5 8A4.5 4.5 0 0 1 42 12.5M42 35.5a4.5 4.5 0 0 1-4.5 4.5M10.5 40A4.5 4.5 0 0 1 6 35.5"
+              stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M6 12.5v3M42 12.5v3M42 35.5v-3M6 35.5v-3" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/>
+        <text x="17.5" y="21.5" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-weight="700" font-size="9" fill="var(--ink)">3</text>
+        <text x="30.5" y="34" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-weight="700" font-size="9" fill="var(--biro)">7</text>
+      </svg>
+      <div class="wordmark">Sudoku<span class="snap">Snap</span></div>
+    </div>
+
+    <h1>Privacy policy</h1>
+    <div class="dates">
+      <span><b>Effective</b> 25 August 2026</span>
+      <span><b>Applies to</b> SudokuSnap for Android</span>
+      <span><b>Package</b> com.samjo.sudoku_snap</span>
+    </div>
+  </header>
+
+  <div class="summary">
+    <h2>The short version</h2>
+    <ul>
+      <li>
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>There is no account, no sign in and no server. The app never asks who you are.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Your photographs are read on the phone. They are not uploaded, and the app keeps no copy.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Nothing you do in the app is uploaded. One thing does leave the phone, and it is named below.</span>
+      </li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Who this is from</h2>
+    <p>SudokuSnap is made and published by Sam Jongman. Questions about this policy go to <a href="mailto:s2550040uni@gmail.com">s2550040uni@gmail.com</a>, which is also the contact address shown on the app's Google Play listing.</p>
+  </section>
+
+  <section>
+    <h2>What the app stores, and where</h2>
+    <p class="lead">Everything the app remembers is stored on your own phone, in the app's private storage. None of it is sent anywhere.</p>
+    <ul class="plain">
+      <li><b>Your settings.</b> The theme, whether the clock is shown, whether the keys buzz, and how mistakes are marked.</li>
+      <li><b>The game in progress.</b> The puzzle, the digits and pencil marks you have written, and the time on the clock.</li>
+      <li><b>Your record.</b> The dates you finished a puzzle on, and how many you have started and finished at each rating, with your times.</li>
+    </ul>
+    <p>None of this identifies you. There is no name, no email address, no account and no device identifier in any of it.</p>
+    <h3>Getting rid of it</h3>
+    <p>Settings has a <b>Clear games and stats</b> control that removes the saved game, the streak and every total immediately. Uninstalling the app removes all of it, settings included. Neither needs a request to anybody, because nobody else has a copy.</p>
+  </section>
+
+  <section>
+    <h2>Your photographs</h2>
+    <p>When you scan a puzzle, the app takes a photograph with the camera or opens one you pick from your gallery. That image is processed on the phone: the grid is found in it, straightened, and each cell is read by a text recogniser that is bundled inside the app.</p>
+    <p>The image is held only for as long as that takes. It is not uploaded, it is not copied into the app's own storage, and no part of it is sent to the developer or to anybody else. Picking a photo from your gallery gives the app that one photo, not your library.</p>
+  </section>
+
+  <section>
+    <h2>What does leave the phone</h2>
+    <p class="lead">One thing, and it is not your images.</p>
+    <p>The text recogniser is <a href="https://developers.google.com/ml-kit" rel="noopener">Google ML Kit</a>, which runs entirely on the phone but brings Google's own telemetry transport with it. That transport logs usage of the recogniser itself: technical and diagnostic information about the library, the device and the API calls made. It does not send your photographs, the puzzle, your times or anything you have typed.</p>
+    <p>This is why the app declares the internet permission even though nothing it reads is uploaded. The logging is Google's, it is part of the library, and it cannot be switched off from inside the app. What Google does with it is covered by the <a href="https://policies.google.com/privacy" rel="noopener">Google privacy policy</a>.</p>
+    <p>The app makes no requests of its own, and adds nothing to what that library sends.</p>
+  </section>
+
+  <section>
+    <h2>Permissions, and why each one is there</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Permission</th><th scope="col">Asked when</th><th scope="col">What it is for</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Camera</td>
+            <td>The first time you tap Camera</td>
+            <td>Taking one still photograph of a puzzle. The app never records video or audio.</td>
+          </tr>
+          <tr>
+            <td>Photos</td>
+            <td>The first time you tap Gallery</td>
+            <td>Opening the single photograph you choose. On newer Android versions the system picker hands over one image without giving the app access to the rest.</td>
+          </tr>
+          <tr>
+            <td><code>INTERNET</code></td>
+            <td>Never asked, granted at install</td>
+            <td>Declared by the ML Kit library for the telemetry described above. The app makes no requests of its own.</td>
+          </tr>
+          <tr>
+            <td><code>ACCESS_NETWORK_STATE</code></td>
+            <td>Never asked, granted at install</td>
+            <td>Also the ML Kit library's, so it can tell whether it is able to send that telemetry.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The camera library the app uses also declares a microphone permission by default, because it can film. That permission is explicitly removed from this app's manifest: a sudoku app asking for your microphone is both untrue and worth refusing over.</p>
+  </section>
+
+  <section>
+    <h2>Children</h2>
+    <p>SudokuSnap collects nothing that could identify anyone, of any age. There is no profiling and no way for one player to reach another, so there is nothing here that treats a child differently from anybody else.</p>
+  </section>
+
+  <section>
+    <h2>Your rights</h2>
+    <p>Under the UK and EU General Data Protection Regulation you have the right to see, correct, export or delete personal data an organisation holds about you. The developer of SudokuSnap holds none: there is no server, no account and no copy of anything from your phone, so there is nothing to hand over or erase on request.</p>
+    <p>The data described above sits on your device and is under your control at all times, through the Clear control in Settings or by uninstalling. For the telemetry that Google's library sends, Google is the controller, and their policy above sets out how to exercise your rights with them.</p>
+  </section>
+
+  <section>
+    <h2>Changes to this policy</h2>
+    <p>This page describes the version of SudokuSnap named at the top. If a later version collects something more, or sends something more, this page will describe it and the effective date will change before that version is published. Anything that needs your consent will ask for it in the app rather than assume it here.</p>
+  </section>
+
+  <hr class="rule">
+
+  <section id="terms">
+    <h2>Terms of use</h2>
+    <p>SudokuSnap is provided free of charge for personal use. You may install and use it on devices you control. You may not sell it, or redistribute it as your own.</p>
+    <h3>No warranty</h3>
+    <p>The app is provided as it is, without warranty of any kind, express or implied, including any warranty of merchantability or fitness for a particular purpose. The scanner reads printed grids well but not perfectly, which is exactly why the app shows you what it read and asks you to check it before you play.</p>
+    <h3>Liability</h3>
+    <p>To the extent the law allows, the developer is not liable for any loss or damage arising from your use of the app, including the loss of a game in progress or of your recorded statistics. Nothing here limits liability that cannot be limited by law, and nothing here affects your statutory rights as a consumer.</p>
+    <h3>The store</h3>
+    <p>The app is distributed through Google Play, and your use of the store itself is governed by Google's own terms. Refunds, where the app is free, are handled by Google.</p>
+    <h3>Governing law</h3>
+    <p>These terms are governed by the law of the Netherlands, and the Dutch courts have jurisdiction over any dispute, without affecting any right you have to bring a claim in the country where you live.</p>
+  </section>
+
+  <footer>
+    <div>SudokuSnap · privacy policy and terms of use · effective 25 August 2026</div>
+    <div>All puzzles are worked out on your phone. So is every photograph you scan.</div>
+  </footer>
+</div>
+</body>
+</html>
